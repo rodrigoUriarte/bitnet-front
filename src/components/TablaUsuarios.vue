@@ -1,0 +1,283 @@
+<template>
+  <div>
+    <div v-if="isLoading">Cargando Usuarios...</div>
+    <div v-else>
+      <v-data-table
+        :headers="headers"
+        :items="usuarios"
+        sort-by="name"
+        class="elevation-1"
+      >
+        <template v-slot:top>
+          <v-toolbar flat>
+            <v-toolbar-title>Usuarios</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-dialog v-model="dialog" max-width="500px">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="primary"
+                  dark
+                  class="mb-2"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  Nuevo Item
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <span class="headline">{{ formTitle }}</span>
+                </v-card-title>
+
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="editedItem.name"
+                          label="Nombre"
+                          hint="Ingrese un nombre de usuario"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="editedItem.email"
+                          label="Email"
+                          hint="Ingrese un email"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="editedItem.password"
+                          :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                          :rules="[rules.required]"
+                          :type="show1 ? 'text' : 'password'"
+                          label="Contraseña"
+                          hint="Ingrese una contraseña"
+                          counter
+                          @click:append="show1 = !show1"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-select
+                          v-model="editedItem.roles"
+                          :items="roles"
+                          label="Roles"
+                          multiple
+                          chips
+                          hint="Que roles tiene el usuario?"
+                          persistent-hint
+                          item-text="name"
+                          item-value="id"
+                        >
+                        </v-select>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="close">
+                    Cancelar
+                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="save">
+                    Guardar
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="dialogDelete" max-width="500px">
+              <v-card>
+                <v-card-title class="headline"
+                  >Esta seguro que desea borrar este item?</v-card-title
+                >
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="closeDelete"
+                    >Cancelar</v-btn
+                  >
+                  <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                    >OK</v-btn
+                  >
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-toolbar>
+        </template>
+        <template v-slot:[`item.roles`]="{ item }">
+          <v-chip v-for="rol in item.roles" v-bind:key="rol.id">
+            {{ rol.name }}
+          </v-chip>
+        </template>
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-icon small class="mr-2" @click="editItem(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+        </template>
+        <template v-slot:no-data>
+          <br />
+          <v-alert dense outlined text type="info" color="primary">
+            Sin Registros
+          </v-alert>
+        </template>
+      </v-data-table>
+    </div>
+  </div>
+</template>
+
+<script>
+import RolDataService from "../services/RolDataService";
+import UserDataService from "../services/UserDataService";
+
+export default {
+  data: () => ({
+    dialog: false,
+    headers: [
+      { text: "Id", align: "start", value: "id" },
+      { text: "Nombre", value: "name" },
+      { text: "Email", value: "email" },
+      { text: "Roles", value: "roles" },
+      { text: "Contraseña", value: "password" },
+      { text: "Actions", value: "actions", sortable: false },
+    ],
+    isLoading: true,
+    usuarios: [],
+    roles: [],
+    editedIndex: -1,
+    editedItem: {
+      id: null,
+      name: "",
+      email: "",
+      roles: "",
+      password: "",
+    },
+    defaultItem: {
+      id: null,
+      name: "",
+      email: "",
+      roles: "",
+      password: "",
+    },
+    dialogDelete: false,
+    //password
+    show1: false,
+    rules: {
+      required: (value) => !!value || "Requerido.",
+    },
+  }),
+
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? "Nuevo Item" : "Editar Item";
+    },
+  },
+
+  watch: {
+    dialog(val) {
+      val || this.close();
+    },
+    dialogDelete(val) {
+      val || this.closeDelete();
+    },
+  },
+
+  created() {
+    this.getUsuarios();
+    this.getRoles();
+  },
+
+  methods: {
+    async getUsuarios() {
+      try {
+        const response = await UserDataService.getAll();
+        this.usuarios = response.data.data;
+        this.isLoading = false;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async getRoles() {
+      try {
+        const response = await RolDataService.getAll();
+        this.roles = response.data.data;
+        this.isLoading = false;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async save() {
+      if (this.editedIndex > -1) {
+        //EDITAR
+        try {
+          const response = await UserDataService.update(
+            this.editedItem.id,
+            this.editedItem
+          );
+          Object.assign(this.usuarios[this.editedIndex], response.data.data);
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        //CREAR
+        try {
+          const response = await UserDataService.create(this.editedItem);
+          this.editedItem.id = response.data.data.id;
+          this.usuarios.push(response.data.data);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      this.close();
+    },
+
+    async destroy(id) {
+      try {
+        await UserDataService.delete(id);
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    editItem(item) {
+      this.editedIndex = this.usuarios.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+
+    deleteItem(item) {
+      this.editedIndex = this.usuarios.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogDelete = true;
+    },
+
+    deleteItemConfirm() {
+      const id = this.editedItem.id;
+      this.destroy(id);
+      this.usuarios.splice(this.editedIndex, 1);
+      this.closeDelete();
+    },
+
+    close() {
+      this.dialog = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+
+    closeDelete() {
+      this.dialogDelete = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+  },
+};
+</script>
