@@ -1,15 +1,15 @@
 import http from "../config.js";
 
 class UserDataService {
-  async getAll() {
+  async index() {
     return http.get("/usuarios");
   }
 
-  get(id) {
+  show(id) {
     return http.get(`/usuarios/${id}`);
   }
 
-  create(data) {
+  store(data) {
     return http.post("/usuarios", data);
   }
 
@@ -17,16 +17,8 @@ class UserDataService {
     return http.put(`/usuarios/${id}`, data);
   }
 
-  delete(id) {
+  destroy(id) {
     return http.delete(`/usuarios/${id}`);
-  }
-
-  deleteAll() {
-    return http.delete(`/usuarios`);
-  }
-
-  findByTitle(title) {
-    return http.get(`/usuarios?title=${title}`);
   }
 }
 

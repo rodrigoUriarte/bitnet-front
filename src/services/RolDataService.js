@@ -1,15 +1,15 @@
 import http from "../config.js";
 
-class UserDataService {
-  async getAll() {
+class RolDataService {
+  async index() {
     return http.get("/roles");
   }
 
-  get(id) {
+  show(id) {
     return http.get(`/roles/${id}`);
   }
 
-  create(data) {
+  store(data) {
     return http.post("/roles", data);
   }
 
@@ -17,17 +17,9 @@ class UserDataService {
     return http.put(`/roles/${id}`, data);
   }
 
-  delete(id) {
+  destroy(id) {
     return http.delete(`/roles/${id}`);
-  }
-
-  deleteAll() {
-    return http.delete(`/roles`);
-  }
-
-  findByTitle(title) {
-    return http.get(`/roles?title=${title}`);
   }
 }
 
-export default new UserDataService();
+export default new RolDataService();

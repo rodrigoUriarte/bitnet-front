@@ -1,15 +1,15 @@
 import http from "../config.js";
 
-class UserDataService {
-  async getAll() {
+class PermisoDataService {
+  async index() {
     return http.get("/permisos");
   }
 
-  get(id) {
+  show(id) {
     return http.get(`/permisos/${id}`);
   }
 
-  create(data) {
+  store(data) {
     return http.post("/permisos", data);
   }
 
@@ -17,17 +17,9 @@ class UserDataService {
     return http.put(`/permisos/${id}`, data);
   }
 
-  delete(id) {
+  destroy(id) {
     return http.delete(`/permisos/${id}`);
-  }
-
-  deleteAll() {
-    return http.delete(`/permisos`);
-  }
-
-  findByTitle(title) {
-    return http.get(`/permisos?title=${title}`);
   }
 }
 
-export default new UserDataService();
+export default new PermisoDataService();

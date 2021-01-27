@@ -1,18 +1,27 @@
 <template>
   <div>
-    <div v-if="isLoading">Cargando Permisos...</div>
+    <div v-if="isLoading">Cargando Foros...</div>
     <div v-else>
       <v-data-table
         :headers="headers"
-        :items="permisos"
+        :items="foros"
         sort-by="name"
         class="elevation-1"
       >
+        <template v-slot:[`item.nombre`]="{ item }">
+          <router-link
+            :to="{ name: 'PreguntasPorForo', params: { foro_id: item.id } }"
+          >
+            {{ item.nombre }}
+          </router-link>
+        </template>
+
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Permisos</v-toolbar-title>
+            <v-toolbar-title>Foros</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
+
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -35,9 +44,9 @@
                     <v-row>
                       <v-col cols="12">
                         <v-text-field
-                          v-model="editedItem.name"
+                          v-model="editedItem.nombre"
                           label="Nombre"
-                          hint="Ingrese un nombre para el permiso"
+                          hint="Ingrese un nombre para el foro"
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -91,26 +100,26 @@
 </template>
 
 <script>
-import PermisoDataService from "../services/PermisoDataService";
+import ForoDataService from "../services/ForoDataService";
 
 export default {
   data: () => ({
     dialog: false,
     headers: [
       { text: "Id", align: "start", value: "id" },
-      { text: "Nombre", value: "name" },
+      { text: "Nombre", value: "nombre" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     isLoading: true,
-    permisos: [],
+    foros: [],
     editedIndex: -1,
     editedItem: {
       id: null,
-      name: "",
+      nombre: "",
     },
     defaultItem: {
       id: null,
-      name: "",
+      nombre: "",
     },
     dialogDelete: false,
   }),
@@ -131,14 +140,14 @@ export default {
   },
 
   created() {
-    this.getPermisos();
+    this.getForos();
   },
 
   methods: {
-    async getPermisos() {
+    async getForos() {
       try {
-        const response = await PermisoDataService.index();
-        this.permisos = response.data.data;
+        const response = await ForoDataService.index();
+        this.foros = response.data.data;
         this.isLoading = false;
       } catch (error) {
         console.error(error);
@@ -149,20 +158,20 @@ export default {
       if (this.editedIndex > -1) {
         //EDITAR
         try {
-          const response = await PermisoDataService.update(
+          const response = await ForoDataService.update(
             this.editedItem.id,
             this.editedItem
           );
-          Object.assign(this.permisos[this.editedIndex], response.data.data);
+          Object.assign(this.foros[this.editedIndex], response.data.data);
         } catch (error) {
           console.error(error);
         }
       } else {
         //CREAR
         try {
-          const response = await PermisoDataService.store(this.editedItem);
+          const response = await ForoDataService.store(this.editedItem);
           this.editedItem.id = response.data.data.id;
-          this.permisos.push(response.data.data);
+          this.foros.push(response.data.data);
         } catch (error) {
           console.error(error);
         }
@@ -172,7 +181,7 @@ export default {
 
     async destroy(id) {
       try {
-        await PermisoDataService.destroy(id);
+        await ForoDataService.destroy(id);
       } catch (err) {
         // Handle Error Here
         console.error(err);
@@ -180,13 +189,13 @@ export default {
     },
 
     editItem(item) {
-      this.editedIndex = this.permisos.indexOf(item);
+      this.editedIndex = this.foros.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem(item) {
-      this.editedIndex = this.permisos.indexOf(item);
+      this.editedIndex = this.foros.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
@@ -194,7 +203,7 @@ export default {
     deleteItemConfirm() {
       const id = this.editedItem.id;
       this.destroy(id);
-      this.permisos.splice(this.editedIndex, 1);
+      this.foros.splice(this.editedIndex, 1);
       this.closeDelete();
     },
 

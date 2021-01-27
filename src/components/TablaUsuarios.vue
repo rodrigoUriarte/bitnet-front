@@ -69,7 +69,7 @@
                           hint="Que roles tiene el usuario?"
                           persistent-hint
                           item-text="name"
-                          item-value="id"
+                          return-object
                         >
                         </v-select>
                       </v-col>
@@ -192,7 +192,7 @@ export default {
   methods: {
     async getUsuarios() {
       try {
-        const response = await UserDataService.getAll();
+        const response = await UserDataService.index();
         this.usuarios = response.data.data;
         this.isLoading = false;
       } catch (error) {
@@ -202,7 +202,7 @@ export default {
 
     async getRoles() {
       try {
-        const response = await RolDataService.getAll();
+        const response = await RolDataService.index();
         this.roles = response.data.data;
         this.isLoading = false;
       } catch (error) {
@@ -225,7 +225,7 @@ export default {
       } else {
         //CREAR
         try {
-          const response = await UserDataService.create(this.editedItem);
+          const response = await UserDataService.store(this.editedItem);
           this.editedItem.id = response.data.data.id;
           this.usuarios.push(response.data.data);
         } catch (error) {
@@ -237,7 +237,7 @@ export default {
 
     async destroy(id) {
       try {
-        await UserDataService.delete(id);
+        await UserDataService.destroy(id);
       } catch (err) {
         // Handle Error Here
         console.error(err);

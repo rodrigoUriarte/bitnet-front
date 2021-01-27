@@ -8,6 +8,12 @@
         sort-by="name"
         class="elevation-1"
       >
+        <template v-slot:[`item.permissions`]="{ item }">
+          <v-chip v-for="permiso in item.permissions" :key="permiso.id">
+            {{ permiso.name }}
+          </v-chip>
+        </template>
+
         <template v-slot:top>
           <v-toolbar flat>
             <v-toolbar-title>Roles</v-toolbar-title>
@@ -50,7 +56,7 @@
                           hint="Que permissions tiene el rol?"
                           persistent-hint
                           item-text="name"
-                          item-value="id"
+                          return-object
                         >
                         </v-select>
                       </v-col>
@@ -87,11 +93,7 @@
             </v-dialog>
           </v-toolbar>
         </template>
-        <template v-slot:[`item.permissions`]="{ item }">
-          <v-chip v-for="permiso in item.permissions" v-bind:key="permiso.id">
-            {{ permiso.name }}
-          </v-chip>
-        </template>
+
         <template v-slot:[`item.actions`]="{ item }">
           <v-icon small class="mr-2" @click="editItem(item)">
             mdi-pencil
@@ -162,7 +164,7 @@ export default {
   methods: {
     async getRoles() {
       try {
-        const response = await RolDataService.getAll();
+        const response = await RolDataService.index();
         this.roles = response.data.data;
         this.isLoading = false;
       } catch (error) {
@@ -172,7 +174,7 @@ export default {
 
     async getPermisos() {
       try {
-        const response = await PermisoDataService.getAll();
+        const response = await PermisoDataService.index();
         this.permissions = response.data.data;
         this.isLoading = false;
       } catch (error) {
@@ -184,7 +186,6 @@ export default {
       if (this.editedIndex > -1) {
         //EDITAR
         try {
-          console.log(this.editedItem);
           const response = await RolDataService.update(
             this.editedItem.id,
             this.editedItem
@@ -196,8 +197,8 @@ export default {
       } else {
         //CREAR
         try {
-          console.log(this.editedItem);
-          const response = await RolDataService.create(this.editedItem);
+          // console.log(this.editedItem);
+          const response = await RolDataService.store(this.editedItem);
           this.editedItem.id = response.data.data.id;
           this.roles.push(response.data.data);
         } catch (error) {
@@ -209,7 +210,7 @@ export default {
 
     async destroy(id) {
       try {
-        await RolDataService.delete(id);
+        await RolDataService.destroy(id);
       } catch (err) {
         // Handle Error Here
         console.error(err);

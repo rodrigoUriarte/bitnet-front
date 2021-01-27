@@ -1,16 +1,16 @@
 <template>
   <div>
-    <div v-if="isLoading">Cargando Permisos...</div>
+    <div v-if="isLoading">Cargando Preguntas...</div>
     <div v-else>
       <v-data-table
         :headers="headers"
-        :items="permisos"
+        :items="preguntas"
         sort-by="name"
         class="elevation-1"
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Permisos</v-toolbar-title>
+            <v-toolbar-title>Preguntas</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
@@ -35,9 +35,16 @@
                     <v-row>
                       <v-col cols="12">
                         <v-text-field
-                          v-model="editedItem.name"
-                          label="Nombre"
-                          hint="Ingrese un nombre para el permiso"
+                          v-model="editedItem.titulo"
+                          label="Titulo"
+                          hint="Ingrese un titulo para su pregunta"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="editedItem.descripcion"
+                          label="Descripcion"
+                          hint="Desarrolle su pregunta"
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -91,26 +98,33 @@
 </template>
 
 <script>
-import PermisoDataService from "../services/PermisoDataService";
+// import PreguntaDataService from "../services/PreguntaDataService";
+import PreguntaDataService from "../services/PreguntaDataService";
 
 export default {
   data: () => ({
     dialog: false,
     headers: [
       { text: "Id", align: "start", value: "id" },
-      { text: "Nombre", value: "name" },
+      { text: "Titulo", value: "titulo" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     isLoading: true,
-    permisos: [],
+    preguntas: [],
     editedIndex: -1,
     editedItem: {
       id: null,
-      name: "",
+      titulo: "",
+      descripcion: "",
+      foro_id: "",
+      user_id: "",
     },
     defaultItem: {
       id: null,
-      name: "",
+      titulo: "",
+      descripcion: "",
+      foro_id: "",
+      user_id: "",
     },
     dialogDelete: false,
   }),
@@ -131,14 +145,15 @@ export default {
   },
 
   created() {
-    this.getPermisos();
+    this.getPreguntas();
   },
 
   methods: {
-    async getPermisos() {
+    async getPreguntas() {
       try {
-        const response = await PermisoDataService.index();
-        this.permisos = response.data.data;
+        const foro_id = this.$route.params.foro_id;
+        const response = await PreguntaDataService.index(foro_id);
+        this.preguntas = response.data.data.preguntas;
         this.isLoading = false;
       } catch (error) {
         console.error(error);
@@ -149,20 +164,24 @@ export default {
       if (this.editedIndex > -1) {
         //EDITAR
         try {
-          const response = await PermisoDataService.update(
+          const response = await PreguntaDataService.update(
             this.editedItem.id,
             this.editedItem
           );
-          Object.assign(this.permisos[this.editedIndex], response.data.data);
+          Object.assign(this.preguntas[this.editedIndex], response.data.data);
         } catch (error) {
           console.error(error);
         }
       } else {
         //CREAR
         try {
-          const response = await PermisoDataService.store(this.editedItem);
+          const foro_id = this.$route.params.foro_id;
+          const user_id = "1";
+          this.editedItem.foro_id = foro_id;
+          this.editedItem.user_id = user_id;
+          const response = await PreguntaDataService.store(this.editedItem);
           this.editedItem.id = response.data.data.id;
-          this.permisos.push(response.data.data);
+          this.preguntas.push(response.data.data);
         } catch (error) {
           console.error(error);
         }
@@ -172,7 +191,7 @@ export default {
 
     async destroy(id) {
       try {
-        await PermisoDataService.destroy(id);
+        await PreguntaDataService.destroy(id);
       } catch (err) {
         // Handle Error Here
         console.error(err);
@@ -180,13 +199,13 @@ export default {
     },
 
     editItem(item) {
-      this.editedIndex = this.permisos.indexOf(item);
+      this.editedIndex = this.preguntas.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem(item) {
-      this.editedIndex = this.permisos.indexOf(item);
+      this.editedIndex = this.preguntas.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
@@ -194,7 +213,7 @@ export default {
     deleteItemConfirm() {
       const id = this.editedItem.id;
       this.destroy(id);
-      this.permisos.splice(this.editedIndex, 1);
+      this.preguntas.splice(this.editedIndex, 1);
       this.closeDelete();
     },
 

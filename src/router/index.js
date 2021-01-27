@@ -3,10 +3,16 @@ import VueRouter from 'vue-router'
 import TablaUsuarios from '../components/TablaUsuarios.vue'
 import TablaPermisos from '../components/TablaPermisos.vue'
 import TablaRoles from '../components/TablaRoles.vue'
+import TablaForos from '../components/TablaForos.vue'
+import TablaPreguntas from '../components/TablaPreguntas.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+  },
   {
     path: '/usuarios',
     name: 'Usuarios',
@@ -22,6 +28,24 @@ const routes = [
     name: 'Permisos',
     component: TablaPermisos
   },
+  {
+    path: '/foros',
+    name: 'Foros',
+    component: TablaForos
+  },
+  {
+    path: '/preguntas',
+    name: 'Preguntas',
+    component: TablaPreguntas,
+  },
+
+  {
+    path: '/foros/:foro_id/preguntas',
+    name: 'PreguntasPorForo',
+    component: TablaPreguntas,
+    props: true
+  },
+
   // {
   //   path: '/about',
   //   name: 'About',
