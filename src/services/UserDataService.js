@@ -1,7 +1,7 @@
 import http from "../config.js";
 
 class UserDataService {
-  async index() {
+  index() {
     return http.get("/usuarios");
   }
 

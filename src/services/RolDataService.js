@@ -1,7 +1,7 @@
 import http from "../config.js";
 
 class RolDataService {
-  async index() {
+  index() {
     return http.get("/roles");
   }
 

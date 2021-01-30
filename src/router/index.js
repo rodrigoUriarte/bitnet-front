@@ -5,6 +5,7 @@ import TablaPermisos from '../components/TablaPermisos.vue'
 import TablaRoles from '../components/TablaRoles.vue'
 import TablaForos from '../components/TablaForos.vue'
 import TablaPreguntas from '../components/TablaPreguntas.vue'
+import TablaRespuestas from '../components/TablaRespuestas.vue'
 
 Vue.use(VueRouter)
 
@@ -43,6 +44,13 @@ const routes = [
     path: '/foros/:foro_id/preguntas',
     name: 'PreguntasPorForo',
     component: TablaPreguntas,
+    props: true
+  },
+
+  {
+    path: '/preguntas/:pregunta_id/respuestas',
+    name: 'RespuestasPorPregunta',
+    component: TablaRespuestas,
     props: true
   },
 

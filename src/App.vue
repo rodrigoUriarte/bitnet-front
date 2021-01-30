@@ -1,22 +1,24 @@
 <template>
   <v-app id="inspire">
-      <sidebar></sidebar>
+    <sidebar></sidebar>
 
-      <v-main>
-          <router-view></router-view>
-      </v-main>
+    <v-main>
+      <v-container class="pa-3" fluid>
+        <router-view></router-view>
+      </v-container>
+    </v-main>
 
-      <v-footer color="indigo" app>
-          <span class="white--text"
-            >&copy; {{ new Date().getFullYear() }}
-            <a
-              href="https://github.com/rodrigoUriarte/"
-              target="_blank"
-              style="color: white"
-              >Rodrigo Uriarte</a
-            >
-          </span>
-      </v-footer>
+    <v-footer color="indigo" app>
+      <span class="white--text"
+        >&copy; {{ new Date().getFullYear() }}
+        <a
+          href="https://github.com/rodrigoUriarte/"
+          target="_blank"
+          style="color: white"
+          >Rodrigo Uriarte</a
+        >
+      </span>
+    </v-footer>
   </v-app>
 </template>
 

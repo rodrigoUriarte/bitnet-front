@@ -1,7 +1,7 @@
 import http from "../config.js";
 
 class PreguntaDataService {
-  async index(foro_id) {
+  index(foro_id) {
     return http.get(`/foros/${foro_id}/preguntas`);
   }
 

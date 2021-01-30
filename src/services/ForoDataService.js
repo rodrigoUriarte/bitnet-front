@@ -1,7 +1,7 @@
 import http from "../config.js";
 
 class ForoDataService {
-  async index() {
+  index() {
     return http.get("/foros");
   }
 

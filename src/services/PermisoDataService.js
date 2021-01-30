@@ -1,7 +1,7 @@
 import http from "../config.js";
 
 class PermisoDataService {
-  async index() {
+  index() {
     return http.get("/permisos");
   }
 

@@ -1,29 +1,21 @@
 <template>
   <div>
-    <div v-if="isLoading">Cargando Preguntas...</div>
+    <div v-if="isLoading">Cargando Respuestas...</div>
     <div v-else>
       <v-card class="mb-2" elevation="10" outlined shaped>
-        <v-card-title> Foro: {{foro}} </v-card-title>
+        <v-card-title> Pregunta </v-card-title>
+        <v-card-subtitle> {{ pregunta.titulo }} </v-card-subtitle>
+        <v-card-text> {{ pregunta.descripcion }} </v-card-text>
       </v-card>
       <v-data-table
         :headers="headers"
-        :items="preguntas"
+        :items="respuestas"
         sort-by="name"
         class="elevation-1"
       >
-        <template v-slot:[`item.titulo`]="{ item }">
-          <router-link
-            :to="{
-              name: 'RespuestasPorPregunta',
-              params: { pregunta_id: item.id },
-            }"
-          >
-            {{ item.titulo }}
-          </router-link>
-        </template>
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Preguntas</v-toolbar-title>
+            <v-toolbar-title>Respuestas</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
@@ -48,16 +40,9 @@
                     <v-row>
                       <v-col cols="12">
                         <v-text-field
-                          v-model="editedItem.titulo"
-                          label="Titulo"
-                          hint="Ingrese un titulo para su pregunta"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field
                           v-model="editedItem.descripcion"
                           label="Descripcion"
-                          hint="Desarrolle su pregunta"
+                          hint="Desarrolle su respuesta"
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -93,12 +78,18 @@
             </v-dialog>
           </v-toolbar>
         </template>
+
         <template v-slot:[`item.actions`]="{ item }">
+          <v-icon small class="mr-2" @click="like(item)"> mdi-thumb-up </v-icon>
+          <v-icon small class="mr-2" @click="dislike(item)">
+            mdi-thumb-down
+          </v-icon>
           <v-icon small class="mr-2" @click="editItem(item)">
             mdi-pencil
           </v-icon>
           <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
         </template>
+
         <template v-slot:no-data>
           <br />
           <v-alert dense outlined text type="info" color="primary">
@@ -111,36 +102,37 @@
 </template>
 
 <script>
-// import PreguntaDataService from "../services/PreguntaDataService";
-import PreguntaDataService from "../services/PreguntaDataService";
+import RespuestaDataService from "../services/RespuestaDataService";
 
 export default {
   data: () => ({
     dialog: false,
     headers: [
       { text: "Id", align: "start", value: "id" },
-      { text: "Titulo", value: "titulo" },
+      { text: "Descripcion", value: "descripcion" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     isLoading: true,
-    preguntas: [],
+    respuestas: [],
     editedIndex: -1,
     editedItem: {
       id: null,
-      titulo: "",
       descripcion: "",
-      foro_id: "",
+      pregunta_id: "",
       user_id: "",
     },
     defaultItem: {
       id: null,
       titulo: "",
       descripcion: "",
-      foro_id: "",
+      pregunta_id: "",
       user_id: "",
     },
     dialogDelete: false,
-    foro: "",
+    pregunta: {
+      titulo: "",
+      descripcion: "",
+    },
   }),
 
   computed: {
@@ -159,16 +151,18 @@ export default {
   },
 
   created() {
-    this.getPreguntas();
+    this.getRespuestas();
   },
 
   methods: {
-    async getPreguntas() {
+
+    async getRespuestas() {
       try {
-        const foro_id = this.$route.params.foro_id;
-        const response = await PreguntaDataService.index(foro_id);
-        this.preguntas = response.data.data.preguntas;
-        this.foro = response.data.data.nombre;
+        const pregunta_id = this.$route.params.pregunta_id;
+        const response = await RespuestaDataService.index(pregunta_id);
+        this.respuestas = response.data.data.respuestas;
+        this.pregunta.titulo = response.data.data.titulo;
+        this.pregunta.descripcion = response.data.data.descripcion;
         this.isLoading = false;
       } catch (error) {
         console.error(error);
@@ -179,24 +173,24 @@ export default {
       if (this.editedIndex > -1) {
         //EDITAR
         try {
-          const response = await PreguntaDataService.update(
+          const response = await RespuestaDataService.update(
             this.editedItem.id,
             this.editedItem
           );
-          Object.assign(this.preguntas[this.editedIndex], response.data.data);
+          Object.assign(this.respuestas[this.editedIndex], response.data.data);
         } catch (error) {
           console.error(error);
         }
       } else {
         //CREAR
         try {
-          const foro_id = this.$route.params.foro_id;
+          const pregunta_id = this.$route.params.pregunta_id;
           const user_id = "1";
-          this.editedItem.foro_id = foro_id;
+          this.editedItem.pregunta_id = pregunta_id;
           this.editedItem.user_id = user_id;
-          const response = await PreguntaDataService.store(this.editedItem);
+          const response = await RespuestaDataService.store(this.editedItem);
           this.editedItem.id = response.data.data.id;
-          this.preguntas.push(response.data.data);
+          this.respuestas.push(response.data.data);
         } catch (error) {
           console.error(error);
         }
@@ -206,7 +200,7 @@ export default {
 
     async destroy(id) {
       try {
-        await PreguntaDataService.destroy(id);
+        await RespuestaDataService.destroy(id);
       } catch (err) {
         // Handle Error Here
         console.error(err);
@@ -214,13 +208,13 @@ export default {
     },
 
     editItem(item) {
-      this.editedIndex = this.preguntas.indexOf(item);
+      this.editedIndex = this.respuestas.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem(item) {
-      this.editedIndex = this.preguntas.indexOf(item);
+      this.editedIndex = this.respuestas.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
@@ -228,7 +222,7 @@ export default {
     deleteItemConfirm() {
       const id = this.editedItem.id;
       this.destroy(id);
-      this.preguntas.splice(this.editedIndex, 1);
+      this.respuestas.splice(this.editedIndex, 1);
       this.closeDelete();
     },
 

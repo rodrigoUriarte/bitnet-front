@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid>
-    <v-app-bar app color="indigo" dark>
+  <div>
+    <v-app-bar app color="indigo">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>bitNet</v-toolbar-title>
     </v-app-bar>
@@ -53,7 +53,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-  </v-container>
+  </div>
 </template>
 
 <script>
