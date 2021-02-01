@@ -5,7 +5,7 @@
       <v-toolbar-title>bitNet</v-toolbar-title>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" app>
-      <v-list dense>
+      <v-list dense v-if="isLogged">
         <v-list-item link to="/dashboard">
           <v-list-item-action>
             <v-icon>mdi-home</v-icon>
@@ -43,6 +43,7 @@
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
+
         <v-list-item link to="/foros">
           <v-list-item-action>
             <v-icon>mdi-forum</v-icon>
@@ -51,13 +52,34 @@
             <v-list-item-title>Foros</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item link @click.native="logout">
+          <v-list-item-action>
+            <v-icon>mdi-logout</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Salir</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
-  data: () => ({ drawer: null }),
+  computed: {
+    ...mapGetters("login", {
+      isLogged: "isLogged",
+    }),
+  },
+  data: () => ({ drawer: false }),
+  methods: {
+    logout() {
+      this.$store.dispatch("login/logout");
+    },
+  },
 };
 </script>
