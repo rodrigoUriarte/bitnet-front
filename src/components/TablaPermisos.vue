@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container class="pa-3" fluid>
     <div v-if="isLoading">Cargando Permisos...</div>
     <div v-else>
       <v-data-table
@@ -33,7 +33,7 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-col cols="12">
+                      <v-col md="12">
                         <v-text-field
                           v-model="editedItem.name"
                           label="Nombre"
@@ -87,7 +87,7 @@
         </template>
       </v-data-table>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>

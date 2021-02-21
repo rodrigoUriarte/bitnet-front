@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container class="pa-3" fluid>
     <div v-if="isLoading">Cargando Respuestas...</div>
     <div v-else>
       <v-card class="mb-2" elevation="10" outlined shaped>
@@ -38,7 +38,7 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-col cols="12">
+                      <v-col md="12">
                         <v-text-field
                           v-model="editedItem.descripcion"
                           label="Descripcion"
@@ -98,7 +98,7 @@
         </template>
       </v-data-table>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -155,7 +155,6 @@ export default {
   },
 
   methods: {
-
     async getRespuestas() {
       try {
         const pregunta_id = this.$route.params.pregunta_id;

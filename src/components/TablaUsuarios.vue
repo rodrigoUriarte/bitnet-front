@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container class="pa-3" fluid>
     <div v-if="isLoading">Cargando Usuarios...</div>
     <div v-else>
       <v-data-table
@@ -33,21 +33,21 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-col cols="12">
+                      <v-col md="12">
                         <v-text-field
                           v-model="editedItem.name"
                           label="Nombre"
                           hint="Ingrese un nombre de usuario"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col md="12">
                         <v-text-field
                           v-model="editedItem.email"
                           label="Email"
                           hint="Ingrese un email"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col md="12">
                         <v-text-field
                           v-model="editedItem.password"
                           :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
@@ -59,7 +59,7 @@
                           @click:append="show1 = !show1"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col md="12">
                         <v-select
                           v-model="editedItem.roles"
                           :items="roles"
@@ -125,7 +125,7 @@
         </template>
       </v-data-table>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>

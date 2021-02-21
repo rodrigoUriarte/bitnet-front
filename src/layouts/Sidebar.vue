@@ -1,9 +1,4 @@
 <template>
-  <div>
-    <v-app-bar app color="indigo">
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>bitNet</v-toolbar-title>
-    </v-app-bar>
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense v-if="isLogged">
         <v-list-item link to="/dashboard">
@@ -63,7 +58,6 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-  </div>
 </template>
 
 <script>

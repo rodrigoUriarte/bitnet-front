@@ -1,11 +1,12 @@
 <template>
   <v-app id="inspire">
-    <sidebar></sidebar>
+    
+    <appbar @toggle-drawer="$refs.drawer.drawer = !$refs.drawer.drawer"></appbar>
 
-    <v-main>
-      <v-container class="pa-3" fluid>
+    <sidebar ref="drawer"></sidebar>
+
+    <v-main app>
         <router-view></router-view>
-      </v-container>
     </v-main>
 
     <v-footer color="indigo" app>
@@ -24,10 +25,12 @@
 
 <script>
 import sidebar from "./layouts/Sidebar.vue";
+import appbar from "./layouts/AppBar.vue";
 
 export default {
   components: {
     sidebar,
+    appbar,
   },
 };
 </script>

@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <v-container class="pa-3" fluid>
     <div v-if="isLoading">Cargando Preguntas...</div>
     <div v-else>
       <v-card class="mb-2" elevation="10" outlined shaped>
-        <v-card-title> Foro: {{foro}} </v-card-title>
+        <v-card-title> Foro: {{ foro }} </v-card-title>
       </v-card>
       <v-data-table
         :headers="headers"
@@ -46,14 +46,14 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-col cols="12">
+                      <v-col md="12">
                         <v-text-field
                           v-model="editedItem.titulo"
                           label="Titulo"
                           hint="Ingrese un titulo para su pregunta"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col md="12">
                         <v-text-field
                           v-model="editedItem.descripcion"
                           label="Descripcion"
@@ -107,7 +107,7 @@
         </template>
       </v-data-table>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>
