@@ -20,6 +20,7 @@ class RespuestaDataService {
   destroy(id) {
     return http.delete(`/respuestas/${id}`);
   }
+  
 }
 
 export default new RespuestaDataService();

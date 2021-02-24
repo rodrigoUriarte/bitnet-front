@@ -80,8 +80,20 @@
         </template>
 
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="like(item)"> mdi-thumb-up </v-icon>
-          <v-icon small class="mr-2" @click="dislike(item)">
+          <v-icon
+            small
+            :style="classLike(item)"
+            class="mr-2"
+            @click="like(item)"
+          >
+            mdi-thumb-up
+          </v-icon>
+          <v-icon
+            small
+            :style="classDislike(item)"
+            class="mr-2"
+            @click="dislike(item)"
+          >
             mdi-thumb-down
           </v-icon>
           <v-icon small class="mr-2" @click="editItem(item)">
@@ -103,6 +115,7 @@
 
 <script>
 import RespuestaDataService from "../services/RespuestaDataService";
+import InteraccionDataService from "../services/InteraccionDataService";
 
 export default {
   data: () => ({
@@ -120,6 +133,8 @@ export default {
       descripcion: "",
       pregunta_id: "",
       user_id: "",
+      like: "",
+      dislike: "",
     },
     defaultItem: {
       id: null,
@@ -127,6 +142,8 @@ export default {
       descripcion: "",
       pregunta_id: "",
       user_id: "",
+      like: "",
+      dislike: "",
     },
     dialogDelete: false,
     pregunta: {
@@ -155,13 +172,56 @@ export default {
   },
 
   methods: {
+    contieneLike(item, userId) {
+      for (var element in item.interacciones) {
+        if (
+          item.interacciones[element].user_id == userId &&
+          item.interacciones[element].respuesta_id == item.id &&
+          item.interacciones[element].like == 1
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
+
+    contieneDislike(item, userId) {
+      for (var element in item.interacciones) {
+        if (
+          item.interacciones[element].user_id == userId &&
+          item.interacciones[element].respuesta_id == item.id &&
+          item.interacciones[element].like == 0
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
+
+    classLike(item) {
+      const userId = JSON.parse(localStorage.getItem("user")).user.id;
+      return {
+        color: this.contieneLike(item, userId) ? "blue" : "",
+      };
+    },
+
+    classDislike(item) {
+      const userId = JSON.parse(localStorage.getItem("user")).user.id;
+      return {
+        color: this.contieneDislike(item, userId) ? "red" : "",
+      };
+    },
+
     async getRespuestas() {
       try {
         const pregunta_id = this.$route.params.pregunta_id;
-        const response = await RespuestaDataService.index(pregunta_id);
-        this.respuestas = response.data.data.respuestas;
-        this.pregunta.titulo = response.data.data.titulo;
-        this.pregunta.descripcion = response.data.data.descripcion;
+        const respuestas = await RespuestaDataService.index(pregunta_id);
+        console.log(respuestas);
+        this.respuestas = respuestas.data.data.respuestas;
+        this.pregunta.titulo = respuestas.data.data.titulo;
+        this.pregunta.descripcion = respuestas.data.data.descripcion;
         this.isLoading = false;
       } catch (error) {
         console.error(error);
@@ -200,6 +260,44 @@ export default {
     async destroy(id) {
       try {
         await RespuestaDataService.destroy(id);
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async like(item) {
+      try {
+        this.editedIndex = this.respuestas.indexOf(item);
+        this.editedItem = Object.assign({}, item);
+        const loggedUser = JSON.parse(localStorage.getItem("user"));
+        var interaccion = {
+          respuesta_id: this.editedItem.id,
+          user_id: loggedUser.user.id,
+          like: 1,
+        };
+        await InteraccionDataService.store(interaccion);
+        //ESTO DE ABAJO SIRVE PARA CAMBIAR EL LIKE DE SI UN SOLO USUARIO INTERACTUO CON LA RESPUESTA, CORREGIR
+        this.respuestas[this.editedIndex].interacciones[0].like = 1;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async dislike(item) {
+      try {
+        this.editedIndex = this.respuestas.indexOf(item);
+        this.editedItem = Object.assign({}, item);
+        const loggedUser = JSON.parse(localStorage.getItem("user"));
+        var interaccion = {
+          respuesta_id: this.editedItem.id,
+          user_id: loggedUser.user.id,
+          like: 0,
+        };
+        await InteraccionDataService.store(interaccion);
+        //ESTO DE ABAJO SIRVE PARA CAMBIAR EL LIKE DE SI UN SOLO USUARIO INTERACTUO CON LA RESPUESTA, CORREGIR
+        this.respuestas[this.editedIndex].interacciones[0].like = 0;
       } catch (err) {
         // Handle Error Here
         console.error(err);
