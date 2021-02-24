@@ -120,6 +120,10 @@ export default {
     headers: [
       { text: "Id", align: "start", value: "id" },
       { text: "Titulo", value: "titulo" },
+      { text: "Autor", value: "user.name" },
+      { text: "Fecha", value: "created_at" },
+      { text: "Cantidad Resp.", value: "cant_respuestas" },
+      { text: "Fecha Ult. Resp.", value: "fecha_ult_resp" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     isLoading: true,
@@ -191,7 +195,7 @@ export default {
         //CREAR
         try {
           const foro_id = this.$route.params.foro_id;
-          const user_id = "1";
+          const user_id = JSON.parse(localStorage.getItem("user")).user.id;
           this.editedItem.foro_id = foro_id;
           this.editedItem.user_id = user_id;
           const response = await PreguntaDataService.store(this.editedItem);

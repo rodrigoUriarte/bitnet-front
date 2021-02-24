@@ -123,6 +123,10 @@ export default {
     headers: [
       { text: "Id", align: "start", value: "id" },
       { text: "Descripcion", value: "descripcion" },
+      { text: "Autor", value: "user.name" },
+      { text: "Fecha", value: "created_at" },
+      { text: "Likes", value: "likes" },
+      { text: "Dislikes", value: "dislikes" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     isLoading: true,
@@ -218,7 +222,6 @@ export default {
       try {
         const pregunta_id = this.$route.params.pregunta_id;
         const respuestas = await RespuestaDataService.index(pregunta_id);
-        console.log(respuestas);
         this.respuestas = respuestas.data.data.respuestas;
         this.pregunta.titulo = respuestas.data.data.titulo;
         this.pregunta.descripcion = respuestas.data.data.descripcion;
@@ -244,7 +247,7 @@ export default {
         //CREAR
         try {
           const pregunta_id = this.$route.params.pregunta_id;
-          const user_id = "1";
+          const user_id = JSON.parse(localStorage.getItem("user")).user.id;
           this.editedItem.pregunta_id = pregunta_id;
           this.editedItem.user_id = user_id;
           const response = await RespuestaDataService.store(this.editedItem);
