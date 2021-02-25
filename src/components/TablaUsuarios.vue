@@ -6,6 +6,7 @@
         :headers="headers"
         :items="usuarios"
         sort-by="name"
+        :search="search"
         class="elevation-1"
       >
         <template v-slot:top>
@@ -13,6 +14,14 @@
             <v-toolbar-title>Usuarios</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
+            <v-text-field
+              class="mr-2"
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Buscar"
+              single-line
+              hide-details
+            ></v-text-field>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -142,6 +151,7 @@ import UserDataService from "../services/UserDataService";
 
 export default {
   data: () => ({
+    search: "",
     dialog: false,
     headers: [
       { text: "Id", align: "start", value: "id" },

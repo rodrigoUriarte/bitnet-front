@@ -19,13 +19,14 @@
             <v-card-text
               >Cantidad Respuestas {{ user.cant_respuestas }}
             </v-card-text>
-          </v-col>          
+          </v-col>
         </v-row>
       </v-card>
       <v-data-table
         :headers="headers"
         :items="preguntas"
         sort-by="created_at"
+        :search="search"
         class="elevation-1"
       >
         <template v-slot:top>
@@ -33,6 +34,13 @@
             <v-toolbar-title>Preguntas</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Buscar"
+              single-line
+              hide-details
+            ></v-text-field>
           </v-toolbar>
         </template>
 
@@ -52,6 +60,7 @@ import UserDataService from "../services/UserDataService";
 
 export default {
   data: () => ({
+    search: "",
     headers: [
       { text: "Id", align: "start", value: "id" },
       { text: "Descripcion", value: "descripcion" },
