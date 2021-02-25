@@ -75,10 +75,11 @@ export default {
         })
         .then(() => {
           this.$router.push({ name: "Dashboard" });
+          location.reload();
         })
         .catch((err) => {
           this.overlay = false;
-          this.loginError = err.response.data.message
+          this.loginError = err.response.data.message;
         });
     },
   },

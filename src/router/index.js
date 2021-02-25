@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
+import Dashboard from "../components/Dashboard.vue";
 import TablaUsuarios from "../components/TablaUsuarios.vue";
 import TablaPermisos from "../components/TablaPermisos.vue";
 import TablaRoles from "../components/TablaRoles.vue";
@@ -28,6 +29,7 @@ const routes = [
   {
     path: "/dashboard",
     name: "Dashboard",
+    component: Dashboard,
     meta: {
       requiresAuth: true
     },

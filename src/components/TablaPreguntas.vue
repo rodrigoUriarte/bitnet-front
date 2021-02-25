@@ -29,6 +29,7 @@
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
+                  v-if="$can('createPregunta')"
                   color="primary"
                   dark
                   class="mb-2"
@@ -94,10 +95,17 @@
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)">
+          <v-icon
+            v-if="$can('updatePregunta')"
+            small
+            class="mr-2"
+            @click="editItem(item)"
+          >
             mdi-pencil
           </v-icon>
-          <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+          <v-icon v-if="$can('deletePregunta')" small @click="deleteItem(item)">
+            mdi-delete
+          </v-icon>
         </template>
         <template v-slot:no-data>
           <br />
@@ -111,7 +119,6 @@
 </template>
 
 <script>
-// import PreguntaDataService from "../services/PreguntaDataService";
 import PreguntaDataService from "../services/PreguntaDataService";
 
 export default {

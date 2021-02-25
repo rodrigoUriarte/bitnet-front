@@ -10,7 +10,7 @@
       <v-data-table
         :headers="headers"
         :items="respuestas"
-        sort-by="name"
+        sort-by="created_at"
         class="elevation-1"
       >
         <template v-slot:top>
@@ -21,6 +21,7 @@
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
+                  v-if="$can('createRespuesta')"
                   color="primary"
                   dark
                   class="mb-2"
@@ -81,6 +82,7 @@
 
         <template v-slot:[`item.actions`]="{ item }">
           <v-icon
+            v-if="$can('updateRespuesta')"
             small
             :style="classLike(item)"
             class="mr-2"
@@ -89,6 +91,7 @@
             mdi-thumb-up
           </v-icon>
           <v-icon
+            v-if="$can('updateRespuesta')"
             small
             :style="classDislike(item)"
             class="mr-2"
@@ -96,10 +99,21 @@
           >
             mdi-thumb-down
           </v-icon>
-          <v-icon small class="mr-2" @click="editItem(item)">
+          <v-icon
+            v-if="$can('updateRespuesta')"
+            small
+            class="mr-2"
+            @click="editItem(item)"
+          >
             mdi-pencil
           </v-icon>
-          <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+          <v-icon
+            v-if="$can('deleteRespuesta')"
+            small
+            @click="deleteItem(item)"
+          >
+            mdi-delete
+          </v-icon>
         </template>
 
         <template v-slot:no-data>
@@ -125,8 +139,8 @@ export default {
       { text: "Descripcion", value: "descripcion" },
       { text: "Autor", value: "user.name" },
       { text: "Fecha", value: "created_at" },
-      { text: "Likes", value: "likes" },
-      { text: "Dislikes", value: "dislikes" },
+      { text: "Likes", value: "cant_likes" },
+      { text: "Dislikes", value: "cant_dislikes" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     isLoading: true,
